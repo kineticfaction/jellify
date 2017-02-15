@@ -1,5 +1,5 @@
 /*
-* jellyfy Carousel 1.0
+* jellify Carousel 1.1
 * https://github.com/kineticfaction/jellify
 *
 * Copyright 2017 Jellymedia
@@ -35,7 +35,31 @@ var jellify = (function ($) {
 
 	};
 
+	module.goto = function(idx) {
+
+		var nudge = parseInt(element.parent('.jellify-wrapper').width());
+
+		element.finish();
+		var current = parseInt(element.css('left')) || 0;
+		var left = nudge * (0 - idx);
+		var max = (0 - numItems) * nudge;
+
+		if(left <= max) {
+			left = 0;
+		}
+
+		if(left > 0) {
+			left = max + nudge;
+		}
+
+		element.animate({
+			left: left + "px"
+		}, 350);
+
+	};
+
 	var bindEvents = function() {
+
 		element.parent('.jellify-wrapper').on('swipeleft', function(e) {
 			rotateNext();
 		});
@@ -51,7 +75,8 @@ var jellify = (function ($) {
 		prevElement.on('pointerdown', function(e) {
 			rotatePrev();
 		});
-	}
+
+	};
 
 	var rotateNext = function() {
 
