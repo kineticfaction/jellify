@@ -1,5 +1,5 @@
 /*
-* jellify Carousel 1.1
+* jellify Carousel 1.2
 * https://github.com/kineticfaction/jellify
 *
 * Copyright 2017 Jellymedia
@@ -15,12 +15,43 @@ var jellify = (function ($) {
 	var nextElement;
 	var prevElement;
 	var numItems;
+	var infinate;
 
 	module.init = function(settings) {
 
-		element = settings.element;
-		nextElement = settings.nextElement;
-		prevElement = settings.prevElement;
+		if(typeof settings.element !== "undefined") {
+			element = settings.element;
+		} else {
+			if(typeof console.error == 'Function') {
+				console.error('jellify :: Element not set');
+			} 
+			else if(typeof console.log == 'Function') {
+				console.error('jellify :: Element not set');
+			} 
+			else {
+				alert('jellify :: Element not set');
+			}
+			
+			return false;
+		}
+
+		if(typeof settings.nextElement !== "undefined") {
+			nextElement = settings.nextElement;
+		} else {
+			nextElement = false;
+		}
+
+		if(typeof settings.prevElement !== "undefined") {
+			prevElement = settings.prevElement;
+		} else {
+			prevElement = false;
+		}
+
+		if(typeof settings.infinate !== "undefined") {
+			infinate = settings.infinate;
+		} else {
+			infinate = false;
+		}
 
 		numItems = element.children().length;
 
@@ -68,13 +99,17 @@ var jellify = (function ($) {
 			rotatePrev();
 		});
 
-		nextElement.on('pointerdown', function(e) {
-			rotateNext();
-		});
+		if(nextElement !== false) {
+			nextElement.on('pointerdown', function(e) {
+				rotateNext();
+			});
+		}
 
-		prevElement.on('pointerdown', function(e) {
-			rotatePrev();
-		});
+		if(prevElement !== false) {
+			prevElement.on('pointerdown', function(e) {
+				rotateNext();
+			});
+		}
 
 	};
 
@@ -87,9 +122,17 @@ var jellify = (function ($) {
 		var left = current - nudge;
 		var max = (0 - numItems) * nudge;
 
-		if(left <= max) {
-			left = 0;
+
+		if(infinate) {
+			if(left <= max) {
+				left = 0;
+			}	
+		} else {
+			if(left <= max) {
+				left = current;
+			}
 		}
+		
 
 		element.animate({
 			left: left + "px"
@@ -106,8 +149,14 @@ var jellify = (function ($) {
 		var left = current + nudge;
 		var max = (0 - numItems) * nudge;
 
-		if(left > 0) {
-			left = max + nudge;
+		if(infinate) {
+			if(left > 0) {
+				left = max + nudge;
+			}
+		} else {
+			if(left > 0) {
+				left = current;
+			}
 		}
 
 		element.animate({
